@@ -2,8 +2,8 @@ from SistemaOperativo import SistemaOperativo
 import sys
 
 def main():
-    sistema = SistemaOperativo(int(sys.argv[1]))
-    sistema.crearProcesos()
+    sistema = SistemaOperativo()
+    sistema.crearProcesos(int(sys.argv[1]))
     sistema.ejecutarProcesos()
 
 if __name__ == '__main__':

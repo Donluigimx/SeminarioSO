@@ -5,8 +5,7 @@ import time
 
 class SistemaOperativo:
     """docstring for SistemaOperativo"""
-    def __init__(self, arg = 0):
-        self.nprocesos = arg
+    def __init__(self):
         self.procesos = []
         self.procesosBloqueados = []
         self.procesosListos = []
@@ -20,11 +19,11 @@ class SistemaOperativo:
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
         self.screen.nodelay(True)
 
-    def crearProcesos(self):
+    def crearProcesos(self, nprocesos):
         operaciones = ("+","-","*","/","%","**","per")
-        if self.nprocesos != 0:
+        if nprocesos != 0:
             i = 0
-            while i < self.nprocesos:
+            while i < nprocesos:
 
                 while True:
                     opval = random.randint(0,len(operaciones)-1)
@@ -44,11 +43,11 @@ class SistemaOperativo:
                                     'operacion': operacion,
                                     'resultado': 0,
                                     'id': id,
-                                    'tll': 0,   #Tiempo de llegada
-                                    'tf': 0,    #Tiempo de Finalización
+                                    'tll': -1,  #Tiempo de llegada
+                                    'tf': -1,   #Tiempo de Finalización
                                     'tro': 0,   #Tiempo de Retorno
                                     'tra': -1,  #Tiempo de Respuesta
-                                    'te': 0,    #Tiempo de Espera
+                                    'te': -1,   #Tiempo de Espera
                                     'ts': 0,    #Tiempo de Servicio
                                     'tme': tme  #Tiempo Medio Estimado
                                 })
@@ -76,6 +75,8 @@ class SistemaOperativo:
             time.sleep(1)
             self.tiempoGlobal += 1
             self.ts += 1
+            if self.proceso != None:
+                self.proceso['ts'] = self.ts
 
     def revisaProcesosBloqueados(self):
         procesos = [proc for proc in self.procesosBloqueados if (self.tiempoGlobal - proc['tb']) == 8]
@@ -87,7 +88,6 @@ class SistemaOperativo:
         c = self.screen.getch()
         if c == ord('p'):
             self.screen.nodelay(False)
-            #self.screen.clear()
             self.screen.addstr(10,35,"Pausa", curses.color_pair(3))
             self.screen.refresh()
             while True:
@@ -108,6 +108,18 @@ class SistemaOperativo:
             if self.proceso != None:
                 self.procesoTerminado(operacion = False)
                 self.nuevoProcesoEjecucion()
+        elif c == ord('u'):
+            self.crearProcesos(1);
+        elif c == ord('b'):
+            self.screen.nodelay(False)
+            self.screen.clear()
+            self.imprimirBPC()
+            self.screen.refresh()
+            while True:
+                c = self.screen.getch()
+                if c == ord('c'):
+                    self.screen.nodelay(True)
+                    break
 
     def nuevoProcesoEjecucion(self):
         if len(self.procesosListos) == 0:
@@ -161,6 +173,14 @@ class SistemaOperativo:
             self.screen.addstr(4+key, 5, str(proceso['ts']))
             self.screen.addstr(4+key, 9, str(proceso['tme']))
 
+        self.screen.addstr(1,43,"ID")
+        self.screen.addstr(1,47,"TS")
+        self.screen.addstr(1,51,"TLL")
+        self.screen.addstr(1,56,"TF")
+        self.screen.addstr(1,60,"TRO")
+        self.screen.addstr(1,65,"TRA")
+        self.screen.addstr(1,70,"TE")
+        self.screen.addstr(1,74,"RES")
         self.screen.addstr(0,52,"Procesos terminados")
         for key,proceso in enumerate(self.procesosTerminados):
             self.screen.addstr(2+key,43,str(proceso["id"]))
@@ -188,18 +208,52 @@ class SistemaOperativo:
             self.screen.addstr(20, 8, str(self.ts))
             self.screen.addstr(20, 13, str(self.tme))
 
-        self.screen.addstr(1,43,"ID")
-        self.screen.addstr(1,47,"TS")
-        self.screen.addstr(1,51,"TLL")
-        self.screen.addstr(1,56,"TF")
-        self.screen.addstr(1,60,"TRO")
-        self.screen.addstr(1,65,"TRA")
-        self.screen.addstr(1,70,"TE")
-        self.screen.addstr(1,74,"RES")
-
-        self.screen.addstr(23,0,"Tiempo Global: "+str(self.tiempoGlobal)+" "+str(self.tme - self.ts))
+        self.screen.addstr(23,0,"Tiempo Global: "+str(self.tiempoGlobal))
 
         self.screen.refresh()
 
+    def imprimirBPC(self):
+        self.screen.addstr(0,14,"PBC")
+        self.screen.addstr(1,1,"ID")
+        self.screen.addstr(1,5,"TS")
+        self.screen.addstr(1,9,"TLL")
+        self.screen.addstr(1,14,"TF")
+        self.screen.addstr(1,18,"TRO")
+        self.screen.addstr(1,23,"TRA")
+        self.screen.addstr(1,28,"TE")
+        self.screen.addstr(1,32,"RES")
+
+        listprocesos = self.procesos + self.procesosListos + self.procesosBloqueados + self.procesosTerminados
+        if self.proceso != None:
+            listprocesos += [self.proceso]
+        for key,proceso in enumerate(listprocesos):
+            if 'proceso' in proceso:
+                proceso = proceso['proceso']
+
+            self.screen.addstr(2+key,1,str(proceso["id"]))
+            self.screen.addstr(2+key,5,str(proceso["ts"]))
+            if proceso['tll'] > -1:
+                self.screen.addstr(2+key,9,str(proceso["tll"]))
+            else:
+                self.screen.addstr(2+key,9,"NA")
+            if proceso['tf'] > -1:
+                self.screen.addstr(2+key,14,str(proceso["tf"]))
+                self.screen.addstr(2+key,18,str(proceso["tro"]))
+            else:
+                self.screen.addstr(2+key,14,"NA")
+                self.screen.addstr(2+key,18,"NA")
+            if proceso['tra'] > -1:
+                self.screen.addstr(2+key,23,str(proceso["tra"]))
+            else:
+                self.screen.addstr(2+key,23,"NA")
+            if proceso['te'] > -1:
+                self.screen.addstr(2+key,28,str(proceso["te"]))
+            elif proceso['ts'] > 0:
+                tro = self.tiempoGlobal - proceso['tll']
+                te = tro - proceso['ts']
+                self.screen.addstr(2+key,28,str(te))
+            else:
+                self.screen.addstr(2+key,28,"0")
+            self.screen.addstr(2+key,32,str(proceso["resultado"])[:5])
 def per(x,y):
     return (float(x)/100)*float(y)
