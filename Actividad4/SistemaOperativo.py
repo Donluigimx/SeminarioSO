@@ -3,6 +3,7 @@ import random
 import Utilidades
 import time
 
+
 class SistemaOperativo:
     """docstring for SistemaOperativo"""
     def __init__(self):
@@ -11,6 +12,7 @@ class SistemaOperativo:
         self.procesosListos = []
         self.procesosTerminados = []
         self.screen = curses.initscr()
+        self.idGlobal = 1
         curses.start_color()
         curses.noecho()
         curses.cbreak()
@@ -38,7 +40,7 @@ class SistemaOperativo:
                         continue
 
                 tme = random.randint(1,20)
-                id = str(i+1)
+                id = str(self.idGlobal)
                 self.procesos.append({
                                     'operacion': operacion,
                                     'resultado': 0,
@@ -52,6 +54,7 @@ class SistemaOperativo:
                                     'tme': tme  #Tiempo Medio Estimado
                                 })
                 i += 1
+                self.idGlobal += 1
 
     def ejecutarProcesos(self):
         self.tme = 0
@@ -173,23 +176,25 @@ class SistemaOperativo:
             self.screen.addstr(4+key, 5, str(proceso['ts']))
             self.screen.addstr(4+key, 9, str(proceso['tme']))
 
-        self.screen.addstr(1,43,"ID")
-        self.screen.addstr(1,47,"TS")
-        self.screen.addstr(1,51,"TLL")
-        self.screen.addstr(1,56,"TF")
-        self.screen.addstr(1,60,"TRO")
-        self.screen.addstr(1,65,"TRA")
-        self.screen.addstr(1,70,"TE")
+        self.screen.addstr(1,38,"ID")
+        self.screen.addstr(1,42,"TS")
+        self.screen.addstr(1,46,"TLL")
+        self.screen.addstr(1,51,"TF")
+        self.screen.addstr(1,55,"TRO")
+        self.screen.addstr(1,60,"TRA")
+        self.screen.addstr(1,65,"TE")
+        self.screen.addstr(1,69,"TME")
         self.screen.addstr(1,74,"RES")
         self.screen.addstr(0,52,"Procesos terminados")
         for key,proceso in enumerate(self.procesosTerminados):
-            self.screen.addstr(2+key,43,str(proceso["id"]))
-            self.screen.addstr(2+key,47,str(proceso["ts"]))
-            self.screen.addstr(2+key,51,str(proceso["tll"]))
-            self.screen.addstr(2+key,56,str(proceso["tf"]))
-            self.screen.addstr(2+key,60,str(proceso["tro"]))
-            self.screen.addstr(2+key,65,str(proceso["tra"]))
-            self.screen.addstr(2+key,70,str(proceso["te"]))
+            self.screen.addstr(2+key,38,str(proceso["id"]))
+            self.screen.addstr(2+key,42,str(proceso["ts"]))
+            self.screen.addstr(2+key,46,str(proceso["tll"]))
+            self.screen.addstr(2+key,51,str(proceso["tf"]))
+            self.screen.addstr(2+key,55,str(proceso["tro"]))
+            self.screen.addstr(2+key,60,str(proceso["tra"]))
+            self.screen.addstr(2+key,65,str(proceso["te"]))
+            self.screen.addstr(2+key,69,str(proceso["tme"]))
             self.screen.addstr(2+key,74,str(proceso["resultado"])[:5])
 
         self.screen.addstr(10, 0,"Procesos Bloqueados")
@@ -221,7 +226,8 @@ class SistemaOperativo:
         self.screen.addstr(1,18,"TRO")
         self.screen.addstr(1,23,"TRA")
         self.screen.addstr(1,28,"TE")
-        self.screen.addstr(1,32,"RES")
+        self.screen.addstr(1,32,"TME")
+        self.screen.addstr(1,37,"RES")
 
         listprocesos = self.procesos + self.procesosListos + self.procesosBloqueados + self.procesosTerminados
         if self.proceso != None:
@@ -254,6 +260,7 @@ class SistemaOperativo:
                 self.screen.addstr(2+key,28,str(te))
             else:
                 self.screen.addstr(2+key,28,"0")
-            self.screen.addstr(2+key,32,str(proceso["resultado"])[:5])
+            self.screen.addstr(2+key,32,str(proceso["tme"]))
+            self.screen.addstr(2+key,37,str(proceso["resultado"])[:5])
 def per(x,y):
     return (float(x)/100)*float(y)

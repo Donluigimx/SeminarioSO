@@ -3,9 +3,11 @@ import random
 import Utilidades
 import time
 
+
 class SistemaOperativo:
     """docstring for SistemaOperativo"""
-    def __init__(self, arg = 0):
+
+    def __init__(self, arg=0):
         self.nprocesos = arg
         self.procesos = []
         self.procesosBloqueados = []
@@ -21,17 +23,17 @@ class SistemaOperativo:
         self.screen.nodelay(True)
 
     def crearProcesos(self):
-        operaciones = ("+","-","*","/","%","**","per")
+        operaciones = ("+", "-", "*", "/", "%", "**", "per")
         if self.nprocesos != 0:
             i = 0
             while i < self.nprocesos:
 
                 while True:
-                    opval = random.randint(0,len(operaciones)-1)
+                    opval = random.randint(0, len(operaciones)-1)
                     if opval > 5:
-                        operacion = operaciones[opval]+"("+str(random.randint(0,100))+","+str(random.randint(0,100))+")"
+                        operacion = operaciones[opval]+"("+str(random.randint(0, 100))+", "+str(random.randint(0, 100))+")"
                     else:
-                        operacion = str(random.randint(-100,100))+operaciones[opval]+str(random.randint(0,100))
+                        operacion = str(random.randint(-100, 100))+operaciones[opval]+str(random.randint(0, 100))
                     try:
                         eval(operacion)
                         break
@@ -88,7 +90,7 @@ class SistemaOperativo:
         if c == ord('p'):
             self.screen.nodelay(False)
             #self.screen.clear()
-            self.screen.addstr(10,35,"Pausa", curses.color_pair(3))
+            self.screen.addstr(10,35, "Pausa", curses.color_pair(3))
             self.screen.refresh()
             while True:
                 c = self.screen.getch()
@@ -150,18 +152,18 @@ class SistemaOperativo:
 
     def imprimir(self):
         self.screen.clear()
-        self.screen.addstr(0,0,"Numero de procesos pendientes: "+str(len(self.procesos)))
+        self.screen.addstr(0,0, "Numero de procesos pendientes: "+str(len(self.procesos)))
 
-        self.screen.addstr(2, 0,"Procesos Listos")
-        self.screen.addstr(3, 1,"ID")
-        self.screen.addstr(3, 5,"TS")
-        self.screen.addstr(3, 9,"TME")
+        self.screen.addstr(2, 0, "Procesos Listos")
+        self.screen.addstr(3, 1, "ID")
+        self.screen.addstr(3, 5, "TS")
+        self.screen.addstr(3, 9, "TME")
         for key,proceso in enumerate(self.procesosListos):
             self.screen.addstr(4+key, 1, str(proceso['id']))
             self.screen.addstr(4+key, 5, str(proceso['ts']))
             self.screen.addstr(4+key, 9, str(proceso['tme']))
 
-        self.screen.addstr(0,52,"Procesos terminados")
+        self.screen.addstr(0,52, "Procesos terminados")
         for key,proceso in enumerate(self.procesosTerminados):
             self.screen.addstr(2+key,43,str(proceso["id"]))
             self.screen.addstr(2+key,47,str(proceso["ts"]))
@@ -172,32 +174,32 @@ class SistemaOperativo:
             self.screen.addstr(2+key,70,str(proceso["te"]))
             self.screen.addstr(2+key,74,str(proceso["resultado"])[:5])
 
-        self.screen.addstr(10, 0,"Procesos Bloqueados")
-        self.screen.addstr(11, 3,"ID")
-        self.screen.addstr(11, 8,"TR")
+        self.screen.addstr(10, 0, "Procesos Bloqueados")
+        self.screen.addstr(11, 3, "ID")
+        self.screen.addstr(11, 8, "TR")
         for key,proceso in enumerate(self.procesosBloqueados):
             self.screen.addstr(12+key, 3,str(proceso['proceso']['id']))
             self.screen.addstr(12+key, 8,str(self.tiempoGlobal - proceso['tb']))
 
-        self.screen.addstr(18, 0,"Proceso en ejecución")
-        self.screen.addstr(19, 3,"ID")
-        self.screen.addstr(19, 8,"TS")
-        self.screen.addstr(19, 13,"TME")
+        self.screen.addstr(18, 0, "Proceso en ejecución")
+        self.screen.addstr(19, 3, "ID")
+        self.screen.addstr(19, 8, "TS")
+        self.screen.addstr(19, 13, "TME")
         if self.proceso != None:
             self.screen.addstr(20, 3, str(self.proceso['id']))
             self.screen.addstr(20, 8, str(self.ts))
             self.screen.addstr(20, 13, str(self.tme))
 
-        self.screen.addstr(1,43,"ID")
-        self.screen.addstr(1,47,"TS")
-        self.screen.addstr(1,51,"TLL")
-        self.screen.addstr(1,56,"TF")
-        self.screen.addstr(1,60,"TRO")
-        self.screen.addstr(1,65,"TRA")
-        self.screen.addstr(1,70,"TE")
-        self.screen.addstr(1,74,"RES")
+        self.screen.addstr(1,43, "ID")
+        self.screen.addstr(1,47, "TS")
+        self.screen.addstr(1,51, "TLL")
+        self.screen.addstr(1,56, "TF")
+        self.screen.addstr(1,60, "TRO")
+        self.screen.addstr(1,65, "TRA")
+        self.screen.addstr(1,70, "TE")
+        self.screen.addstr(1,74, "RES")
 
-        self.screen.addstr(23,0,"Tiempo Global: "+str(self.tiempoGlobal)+" "+str(self.tme - self.ts))
+        self.screen.addstr(23,0, "Tiempo Global: "+str(self.tiempoGlobal))
 
         self.screen.refresh()
 

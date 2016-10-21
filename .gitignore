@@ -41,5 +41,10 @@ Thumbs.db
 #################
 *.pdf
 *.odt
+*.odt#
 *.doc
 *.docx
+
+# IDE files #
+#############
+*.idea
