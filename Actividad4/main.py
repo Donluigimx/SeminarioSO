@@ -8,6 +8,6 @@ def main():
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("How to use: python main.py n_proc")
+        print("How to use: python __main__.py n_proc")
     else:
         main()
